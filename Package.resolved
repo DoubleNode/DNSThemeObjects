@@ -1,0 +1,140 @@
+{
+  "pins" : [
+    {
+      "identity" : "activelabel.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/optonaut/ActiveLabel.swift",
+      "state" : {
+        "revision" : "36949c1a69ef8b40574da20c9e24b115f387b1cf",
+        "version" : "1.1.5"
+      }
+    },
+    {
+      "identity" : "alamofire",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/Alamofire.git",
+      "state" : {
+        "revision" : "513364f870f6bfc468f9d2ff0a95caccc10044c5",
+        "version" : "5.10.2"
+      }
+    },
+    {
+      "identity" : "alamofireimage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/AlamofireImage.git",
+      "state" : {
+        "revision" : "1eaf3b6c6882bed10f6e7b119665599dd2329aa1",
+        "version" : "4.3.0"
+      }
+    },
+    {
+      "identity" : "animatedfield",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DoubleNodeOpen/AnimatedField.git",
+      "state" : {
+        "revision" : "978a46e23c6a7a73dd5324531daf3b63edb5f44e",
+        "version" : "2.5.69"
+      }
+    },
+    {
+      "identity" : "atomicswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DoubleNodeOpen/AtomicSwift.git",
+      "state" : {
+        "revision" : "6efc4ec9370703f1e4d83ec13a9b7132f3b8ad60",
+        "version" : "1.2.3"
+      }
+    },
+    {
+      "identity" : "dnscore",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DoubleNode/DNSCore.git",
+      "state" : {
+        "revision" : "f3ce678397cf02195e94f759978a022acb80fc4f",
+        "version" : "1.12.0"
+      }
+    },
+    {
+      "identity" : "dnscorethreading",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DoubleNode/DNSCoreThreading.git",
+      "state" : {
+        "revision" : "cc5e2487c762059be53d28f2679bf95a887dda43",
+        "version" : "1.12.0"
+      }
+    },
+    {
+      "identity" : "dnserror",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DoubleNode/DNSError.git",
+      "state" : {
+        "revision" : "80c78e038c6365b55be6e310aaae4afba231e459",
+        "version" : "1.12.0"
+      }
+    },
+    {
+      "identity" : "dnsthemetypes",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DoubleNode/DNSThemeTypes.git",
+      "state" : {
+        "revision" : "dcb365de70c827b0870d49f9c5f298551556a274",
+        "version" : "1.12.1"
+      }
+    },
+    {
+      "identity" : "phonenumberkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DoubleNodeOpen/PhoneNumberKit",
+      "state" : {
+        "revision" : "ce40a19644c4c1c3132c0092a70105b5c9d9fa84",
+        "version" : "4.1.5"
+      }
+    },
+    {
+      "identity" : "sfsymbol",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DoubleNodeOpen/SFSymbol",
+      "state" : {
+        "revision" : "b24137abd255db8a128326f73ab9c0bad1b81df2",
+        "version" : "3.0.1"
+      }
+    },
+    {
+      "identity" : "skeletonview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Juanpe/SkeletonView.git",
+      "state" : {
+        "revision" : "739a4f5d78731bebc48811c75fa9e1f4c4cef23e",
+        "version" : "1.30.4"
+      }
+    },
+    {
+      "identity" : "swift-mask-textfield",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DoubleNodeOpen/swift-mask-textfield.git",
+      "state" : {
+        "revision" : "e94fb6aa2eebd414b8cfe585434b9cdd08ff1a30",
+        "version" : "1.1.3"
+      }
+    },
+    {
+      "identity" : "swiftybeaver",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/DoubleNodeOpen/SwiftyBeaver.git",
+      "state" : {
+        "revision" : "077d7ba1389768c32d6e1c190af6bfb93fb20bc2",
+        "version" : "2.1.2"
+      }
+    },
+    {
+      "identity" : "swipecellkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwipeCellKit/SwipeCellKit",
+      "state" : {
+        "revision" : "7219cad3098637176ace311510d11467dbfb9bb0",
+        "version" : "2.7.1"
+      }
+    }
+  ],
+  "version" : 2
+}
