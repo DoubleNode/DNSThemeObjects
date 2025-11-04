@@ -29,13 +29,13 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/optonaut/ActiveLabel.swift", .upToNextMajor(from: "1.1.5")),
         .package(url: "https://github.com/Alamofire/AlamofireImage.git", .upToNextMajor(from: "4.3.0")),
-        .package(url: "https://github.com/DoubleNodeOpen/AnimatedField.git", .upToNextMajor(from: "2.5.69")),
-        .package(url: "https://github.com/DoubleNode/DNSCore.git", .upToNextMajor(from: "1.12.0")),
-        .package(url: "https://github.com/DoubleNode/DNSThemeTypes.git", .upToNextMajor(from: "1.12.0")),
+        .package(url: "https://github.com/DoubleNodeOpen/AnimatedField.git", .upToNextMajor(from: "3.0.0")),
+        .package(url: "https://github.com/DoubleNode/DNSCore.git", .upToNextMajor(from: "1.12.1")),
+        .package(url: "https://github.com/DoubleNode/DNSThemeTypes.git", .upToNextMajor(from: "1.12.1")),
 //        .package(path: "../../Open Source/AnimatedField"),
 //        .package(path: "../DNSCore"),
 //        .package(path: "../DNSThemeTypes"),
-        .package(url: "https://github.com/Juanpe/SkeletonView.git", .upToNextMajor(from: "1.30.4")),
+        .package(url: "https://github.com/Juanpe/SkeletonView.git", .upToNextMajor(from: "1.31.0")),
         .package(url: "https://github.com/SwipeCellKit/SwipeCellKit", .upToNextMajor(from: "2.7.1"))
     ],
     targets: [

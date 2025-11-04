@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/DoubleNodeOpen/AnimatedField.git",
       "state" : {
-        "revision" : "978a46e23c6a7a73dd5324531daf3b63edb5f44e",
-        "version" : "2.5.69"
+        "revision" : "1421681b250b2bd73925003889ef6c205f2e3b90",
+        "version" : "3.0.0"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/DoubleNode/DNSCore.git",
       "state" : {
-        "revision" : "f3ce678397cf02195e94f759978a022acb80fc4f",
-        "version" : "1.12.0"
+        "revision" : "ea940ed4f9a464b6e553ed1c77a665b26374238e",
+        "version" : "1.12.1"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/DoubleNode/DNSCoreThreading.git",
       "state" : {
-        "revision" : "cc5e2487c762059be53d28f2679bf95a887dda43",
-        "version" : "1.12.0"
+        "revision" : "1d8074373c2a61765e7fb5b68a714cf99577ac8d",
+        "version" : "1.12.1"
       }
     },
     {
@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Juanpe/SkeletonView.git",
       "state" : {
-        "revision" : "739a4f5d78731bebc48811c75fa9e1f4c4cef23e",
-        "version" : "1.30.4"
+        "revision" : "2f5274827d310e32c09325dd3e0007120940988e",
+        "version" : "1.31.0"
       }
     },
     {
