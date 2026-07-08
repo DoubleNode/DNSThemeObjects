@@ -4,6 +4,25 @@ All notable changes to DNSThemeObjects are documented here. Versions follow [Sem
 
 ---
 
+## 1.12.3 — 2026-07-08
+
+**Release Type**
+-   BUGFIX
+
+**Issues Resolved**
+-   XDNS-0014 — DNSForm field cells rendered correctly after the XDNS-0012 fix but were **uneditable**: tapping a field showed the keyboard, which was then immediately dismissed. Root cause: `DNSUIAnimatedField.style.didSet` re-applied the style on every assignment (its idempotency guard had been commented out since the control's first commit). When a host reconfigured a visible cell while it was first responder (normal `UICollectionView` diffable-datasource behavior), the redundant re-apply rebuilt the field via AnimatedField 3.1.1+'s `format.didSet -> setupTitle()`, resigning first responder. Surfaced only after XDNS-0012 aligned to AnimatedField 3.2.2, where field rebuild moved into `format.didSet`.
+
+**New Features**
+-   NONE
+
+**Technical Improvements**
+-   Re-enabled the idempotency guard `guard oldValue != style else { return }` in `DNSUIAnimatedField.style.didSet`. The comparison is value-based (`!=` dispatches to `DNSThemeStyle`/`DNSThemeFieldStyle.isDiffFrom`, comparing `titleAlwaysVisible`, `lineColor`, `textStyle`, `titleStyle`, etc.), so it no-ops only genuinely-redundant reassignments while still applying real changes — including the per-cell `titleAlwaysVisible` overrides introduced in DNSForm 1.12.5. State-driven restyling is unaffected: `isEnabled`/`isSelected`/`isHighlighted` call `updateForState(using:)` directly, independent of the style setter.
+
+**Known Problems**
+-   The `DNSThemeObjectsTests` unit-test target still does not compile under the Xcode 27 / iOS 27 SDK toolchain (Swift 6 `@MainActor` strict-concurrency). Test-only; the shippable library builds cleanly. Tracked as XDNS-0013. This fix's regression tests were added to the DNSForm test target (which runs) and pass.
+
+---
+
 ## 1.12.2 — 2026-07-07
 
 **Release Type**

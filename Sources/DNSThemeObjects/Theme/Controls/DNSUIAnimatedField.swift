@@ -18,7 +18,14 @@ import UIKit
     private var _settingStyleInProgress = false
     public var style: DNSThemeStyle = ThemeStyle.default {
         didSet {
-//            guard oldValue != style else { return }
+            // Idempotency guard (XDNS-0014): skip re-apply when the style value is
+            // unchanged. `!=` dispatches to DNSThemeStyle/DNSThemeFieldStyle.isDiffFrom,
+            // a value-based compare (incl. titleAlwaysVisible, lineColor, text/title
+            // style), so per-cell overrides still apply while redundant reconfigures
+            // no-op. Without this, AnimatedField 3.1.1+ rebuilds the field inside
+            // format.didSet -> setupTitle() on every reassignment, resigning the active
+            // first responder and making reconfigured cells uneditable.
+            guard oldValue != style else { return }
             _settingStyleInProgress = true
             self.styleName = style.fullName
             _settingStyleInProgress = false
