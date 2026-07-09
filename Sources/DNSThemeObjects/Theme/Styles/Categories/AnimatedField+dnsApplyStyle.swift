@@ -206,6 +206,48 @@ public extension AnimatedField {
             newFormat.countDown = style.countDown.focused
             newFormat.counterAnimation = style.counterAnimation.focused
         }
+        // XDNS-0015: guard the state-driven format re-apply. `newFormat` began as a copy
+        // of self.format (above the state blocks) and only the state-varying fields were
+        // reassigned, so comparing exactly those fields is complete equality — it can never
+        // wrongly skip a real state change. Every `format` assignment triggers AnimatedField's
+        // format.didSet -> setupTitle() rebuild, which resigns the active first responder; on
+        // focus the inner text field's isSelected/isHighlighted toggle and route here, so
+        // without this guard single-line fields resign on focus and become uneditable.
+        // (AnimatedFieldFormat is not Equatable, hence the explicit compare below.)
+        guard !newFormat.dnsHasSameStateValues(as: self.format) else { return }
         self.format = newFormat
+    }
+}
+
+// XDNS-0015: AnimatedFieldFormat is a non-Equatable third-party struct. Compare exactly the
+// fields that updateForState(using: DNSThemeFieldStyle) mutates so a no-op state re-apply can
+// skip the format.didSet -> setupTitle() rebuild that would otherwise resign first responder.
+private extension AnimatedFieldFormat {
+    func dnsHasSameStateValues(as other: AnimatedFieldFormat) -> Bool {
+        invalidCharacters == other.invalidCharacters
+            && alertPosition == other.alertPosition
+            && visibleOnImage == other.visibleOnImage
+            && visibleOffImage == other.visibleOffImage
+            && highlightColor == other.highlightColor
+            && placeholderColor == other.placeholderColor
+            && textFieldHeight == other.textFieldHeight
+            && titleAlwaysVisible == other.titleAlwaysVisible
+            && titleFont == other.titleFont
+            && textFont == other.textFont
+            && counterFont == other.counterFont
+            && alertFont == other.alertFont
+            && lineColor == other.lineColor
+            && pickerTextColor == other.pickerTextColor
+            && titleColor == other.titleColor
+            && textColor == other.textColor
+            && counterColor == other.counterColor
+            && alertColor == other.alertColor
+            && alertEnabled == other.alertEnabled
+            && alertFieldActive == other.alertFieldActive
+            && alertLineActive == other.alertLineActive
+            && alertTitleActive == other.alertTitleActive
+            && counterEnabled == other.counterEnabled
+            && countDown == other.countDown
+            && counterAnimation == other.counterAnimation
     }
 }

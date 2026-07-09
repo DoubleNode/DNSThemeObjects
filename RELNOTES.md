@@ -4,6 +4,25 @@ All notable changes to DNSThemeObjects are documented here. Versions follow [Sem
 
 ---
 
+## 1.12.4 — 2026-07-09
+
+**Release Type**
+-   BUGFIX
+
+**Issues Resolved**
+-   XDNS-0015 — Single-line DNSForm text fields (`DNSFormDetailTextFieldCell`) dropped the keyboard ~0.3s after focus and could not be edited (multi-line and picker fields were unaffected). Root cause: the state-driven style path re-assigned `format` on focus with no idempotency guard. On focus the inner text field's `isSelected`/`isHighlighted` toggle, routing through the `DNSUIAnimatedField` state setters into `updateForState(using:)`, which unconditionally did `self.format = newFormat` → AnimatedField 3.2.2's `format.didSet -> setupTitle()` rebuilt the field and resigned first responder. This is a distinct path from the reconfigure/`style.didSet` guard shipped in 1.12.3 (XDNS-0014), which does not cover focus-time state changes.
+
+**New Features**
+-   NONE
+
+**Technical Improvements**
+-   Guarded the state-driven format re-apply in `AnimatedField.updateForState(using: DNSThemeFieldStyle)`: `guard !newFormat.dnsHasSameStateValues(as: self.format) else { return }` before `self.format = newFormat`. `AnimatedFieldFormat` is not `Equatable`, so a private helper compares exactly the fields `updateForState` mutates. Because `newFormat` begins as a copy of the current format and only those fields are reassigned, the comparison is complete equality and can never skip a genuine state change; a no-op re-apply (e.g. focusing a `.DNSForm.default` field, whose per-state values all equal `.normal`) now early-returns without rebuilding the field.
+
+**Known Problems**
+-   Regression coverage for this specific guard is verified by field-list cross-check + value-level mirror + trace rather than an in-package unit test, because `DNSThemeObjectsTests` does not compile under the Xcode 27 / iOS 27 SDK toolchain (XDNS-0013) and DNSForm does not depend on DNSThemeObjects. A runnable test lands with XDNS-0013.
+
+---
+
 ## 1.12.3 — 2026-07-08
 
 **Release Type**
