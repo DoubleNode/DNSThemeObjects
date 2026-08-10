@@ -222,12 +222,24 @@ public extension AnimatedField {
 // XDNS-0015: AnimatedFieldFormat is a non-Equatable third-party struct. Compare exactly the
 // fields that updateForState(using: DNSThemeFieldStyle) mutates so a no-op state re-apply can
 // skip the format.didSet -> setupTitle() rebuild that would otherwise resign first responder.
+//
+// XDNS-0018: visibleOnImage/visibleOffImage are deliberately excluded here, mirroring the same
+// exclusion DNSThemeFieldStyle.isDiffFrom already makes (DNSThemeTypes/.../DNSThemeFieldStyle.swift
+// isDiffFrom, visibleOnImage/visibleOffImage lines commented out). Two reasons this exclusion is
+// correct rather than a hack: (1) these are plain UIImage on DNSThemeFieldStyle, not a state-valued
+// wrapper like DNSUIColor/DNSUIEnabled -- they have no .normal/.selected/.highlighted/.focused
+// variant to begin with, so they cannot participate in a *state* change; updateForState(using:)
+// above assigns them unconditionally, outside the isEnabled/isSelected/isHighlighted/isFocused
+// branches, confirming the framework already treats them as state-invariant. (2) DNSThemeFieldStyle's
+// copy init (DNSThemeTypes/.../DNSThemeFieldStyle.swift) calls .copy() on these images on every
+// style copy, which for a mutable-copy UIImage can produce a new instance with the same visual
+// content; comparing by instance identity/equality here would falsely report "different" purely
+// from that copy churn, defeating the no-op guard below and forcing an unnecessary rebuild every
+// reconfigure. Excluding them keeps this a pure state comparison, matching the isDiffFrom symmetry.
 private extension AnimatedFieldFormat {
     func dnsHasSameStateValues(as other: AnimatedFieldFormat) -> Bool {
         invalidCharacters == other.invalidCharacters
             && alertPosition == other.alertPosition
-            && visibleOnImage == other.visibleOnImage
-            && visibleOffImage == other.visibleOffImage
             && highlightColor == other.highlightColor
             && placeholderColor == other.placeholderColor
             && textFieldHeight == other.textFieldHeight
