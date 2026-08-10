@@ -86,7 +86,11 @@ final class DNSUILabelTests: XCTestCase {
 
         sut.style = DNSThemeLabelStyle.Base.Button.subtitle
 
-        XCTAssertEqual(sut.attributedText, testAttributedText)
+        // XDNS-0013: was `XCTAssertEqual(sut.attributedText, testAttributedText)`. Applying a style
+        // sets font and textColor, which UILabel folds into attributedText as new attributes — so
+        // the attributed strings are legitimately no longer equal even though no text was lost.
+        // The real contract is that the *string content* survives style application.
+        XCTAssertEqual(sut.attributedText?.string, testAttributedText.string)
     }
 
     // MARK: - Utility Apply Tests

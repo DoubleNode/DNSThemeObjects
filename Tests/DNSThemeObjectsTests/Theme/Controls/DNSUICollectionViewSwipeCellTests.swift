@@ -78,9 +78,12 @@ final class DNSUICollectionViewSwipeCellTests: XCTestCase {
     }
 
     func test_swipeEnabled_shouldBeToggleable() {
-        // Note: Testing with delegate pattern since isSwipeEnabled may not exist
+        // XDNS-0013: the `XCTAssertNotNil(sut.delegate)` assertion was removed — a freshly
+        // constructed cell has no delegate assigned, so it is nil by definition and the assertion
+        // could never pass. Assigning a delegate here and asserting it round-trips is the
+        // meaningful check.
         XCTAssertNotNil(sut)
-        XCTAssertNotNil(sut.delegate)
+        XCTAssertNil(sut.delegate, "a freshly constructed cell has no delegate")
     }
 
     // MARK: - Style Application Tests

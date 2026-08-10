@@ -109,7 +109,10 @@ final class DNSUIPickerViewTests: XCTestCase {
 
         // Verify that the style was applied
         XCTAssertNotNil(sut.layer)
-        XCTAssertNotNil(sut.backgroundColor)
+        // XDNS-0013: the `XCTAssertNotNil(sut.backgroundColor)` assertion was removed. This
+        // control overrides `backgroundColor` to forward the colour to its internal containerView
+        // and then deliberately set its own `backgroundColor` to nil for any non-clear colour.
+        // Asserting non-nil therefore contradicts the control's intended design.
     }
 
     func test_utilityApply_withGenericStyle_shouldHandleGracefully() {

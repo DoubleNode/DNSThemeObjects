@@ -11,6 +11,26 @@ import XCTest
 
 final class UIViewControllerTopViewControllerTests: XCTestCase {
 
+    /// XDNS-0013: several tests below fake a modal hierarchy with
+    /// `setValue(_:forKey: "presentedViewController")`. `presentedViewController` is a read-only
+    /// UIViewController property and is not KVC-settable, so those calls raise
+    /// `NSUnknownKeyException` — "this class is not key value coding-compliant for the key
+    /// presentedViewController". The technique never worked; it was simply never executed, because
+    /// this target had not compiled under the current toolchain.
+    ///
+    /// Building the hierarchy honestly requires real `present(_:animated:)`, which needs a running
+    /// app host — unavailable in a hostless SPM test target (verified: `connectedScenes == 0`,
+    /// `UIApplication.windows` empty).
+    ///
+    /// These are SKIPPED rather than left raising or rewritten around. A skip reports honestly as
+    /// "not run"; substituting weaker assertions would manufacture coverage that verifies nothing.
+    /// Restoring them requires a test host application; tracked separately.
+    private func skipNeedsRealPresentation() throws {
+        throw XCTSkip(
+            "Requires real modal presentation via an app host: presentedViewController is read-only and not KVC-settable (XDNS-0013)"
+        )
+    }
+
     // MARK: - Basic View Controller Tests
 
     func test_dnsTopViewController_withSimpleViewController_shouldReturnSelf() {
@@ -97,12 +117,21 @@ final class UIViewControllerTopViewControllerTests: XCTestCase {
         XCTAssertTrue(topViewController === thirdController)
     }
 
-    func test_dnsTopViewController_withNestedNavigationControllers_shouldReturnDeepestController() {
+    // XDNS-0013: this previously nested a UINavigationController inside another
+    // UINavigationController, which UIKit forbids — it raised
+    // "Pushing a navigation controller is not supported (NSInvalidArgumentException)".
+    // The test therefore asserted behaviour for a hierarchy that cannot exist.
+    // Rewritten to a legal nested-container arrangement (tab bar -> navigation -> leaf) so the
+    // actual intent — that dnsTopViewController recurses through nested containers to the deepest
+    // controller — is still covered.
+    func test_dnsTopViewController_withNestedContainerControllers_shouldReturnDeepestController() {
         let deepController = UIViewController()
         let innerNavController = UINavigationController(rootViewController: deepController)
-        let outerNavController = UINavigationController(rootViewController: innerNavController)
+        let outerTabController = UITabBarController()
+        outerTabController.viewControllers = [innerNavController]
+        outerTabController.selectedIndex = 0
 
-        let topViewController = outerNavController.dnsTopViewController
+        let topViewController = outerTabController.dnsTopViewController
 
         XCTAssertEqual(topViewController, deepController)
         XCTAssertTrue(topViewController === deepController)
@@ -177,7 +206,8 @@ final class UIViewControllerTopViewControllerTests: XCTestCase {
 
     // MARK: - Presented View Controller Tests
 
-    func test_dnsTopViewController_withPresentedController_shouldReturnPresentedController() {
+    func test_dnsTopViewController_withPresentedController_shouldReturnPresentedController() throws {
+        try skipNeedsRealPresentation()
         let baseController = UIViewController()
         let presentedController = UIViewController()
 
@@ -190,7 +220,8 @@ final class UIViewControllerTopViewControllerTests: XCTestCase {
         XCTAssertTrue(topViewController === presentedController)
     }
 
-    func test_dnsTopViewController_withChainedPresentedControllers_shouldReturnTopmost() {
+    func test_dnsTopViewController_withChainedPresentedControllers_shouldReturnTopmost() throws {
+        try skipNeedsRealPresentation()
         let baseController = UIViewController()
         let firstPresentedController = UIViewController()
         let secondPresentedController = UIViewController()
@@ -205,7 +236,8 @@ final class UIViewControllerTopViewControllerTests: XCTestCase {
         XCTAssertTrue(topViewController === secondPresentedController)
     }
 
-    func test_dnsTopViewController_withPresentedNavigationController_shouldReturnDeepestController() {
+    func test_dnsTopViewController_withPresentedNavigationController_shouldReturnDeepestController() throws {
+        try skipNeedsRealPresentation()
         let baseController = UIViewController()
         let deepController = UIViewController()
         let presentedNavController = UINavigationController(rootViewController: deepController)
@@ -219,7 +251,8 @@ final class UIViewControllerTopViewControllerTests: XCTestCase {
         XCTAssertTrue(topViewController === deepController)
     }
 
-    func test_dnsTopViewController_withPresentedTabBarController_shouldReturnDeepestController() {
+    func test_dnsTopViewController_withPresentedTabBarController_shouldReturnDeepestController() throws {
+        try skipNeedsRealPresentation()
         let baseController = UIViewController()
         let deepController = UIViewController()
         let presentedTabController = UITabBarController()
@@ -237,7 +270,8 @@ final class UIViewControllerTopViewControllerTests: XCTestCase {
 
     // MARK: - Complex Hierarchy Tests
 
-    func test_dnsTopViewController_withComplexHierarchy_shouldReturnDeepestController() {
+    func test_dnsTopViewController_withComplexHierarchy_shouldReturnDeepestController() throws {
+        try skipNeedsRealPresentation()
         // Create a complex hierarchy: TabBar -> Navigation -> Base -> Presented Navigation -> Deep Controller
         let deepController = UIViewController()
         let presentedNavController = UINavigationController(rootViewController: deepController)
@@ -257,7 +291,8 @@ final class UIViewControllerTopViewControllerTests: XCTestCase {
         XCTAssertTrue(topViewController === deepController)
     }
 
-    func test_dnsTopViewController_withMixedContainerTypes_shouldReturnDeepestController() {
+    func test_dnsTopViewController_withMixedContainerTypes_shouldReturnDeepestController() throws {
+        try skipNeedsRealPresentation()
         // Tab -> Navigation -> Regular -> Presented Tab -> Navigation -> Deep
         let deepController = UIViewController()
         let deepNavController = UINavigationController(rootViewController: deepController)
@@ -449,7 +484,8 @@ final class UIViewControllerTopViewControllerTests: XCTestCase {
         XCTAssertTrue(topController === controller)
     }
 
-    func test_dnsTopViewController_withCircularPresentation_shouldHandleGracefully() {
+    func test_dnsTopViewController_withCircularPresentation_shouldHandleGracefully() throws {
+        try skipNeedsRealPresentation()
         // Note: In practice, UIKit prevents true circular presentations,
         // but this tests the robustness of the algorithm
         let controller1 = UIViewController()

@@ -204,7 +204,11 @@ final class UIImageBarcodeTests: XCTestCase {
         if let image = result {
             XCTAssertGreaterThan(image.size.width, 0)
             XCTAssertGreaterThan(image.size.height, 0)
-            XCTAssertNotNil(image.cgImage)
+            // XDNS-0013: was `XCTAssertNotNil(image.cgImage)`, which could never pass.
+            // `UIImage.barcode(from:)` returns `UIImage(ciImage:)` (UIImage+dnsBarcode.swift), and a
+            // CIImage-backed UIImage has a nil `cgImage` by definition. Assert the backing that
+            // actually exists. (Same CIImage-vs-CGImage distinction tracked in XDNS-0024.)
+            XCTAssertNotNil(image.ciImage)
         }
     }
 

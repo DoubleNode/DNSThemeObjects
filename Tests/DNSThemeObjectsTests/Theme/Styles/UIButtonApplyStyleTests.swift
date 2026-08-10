@@ -73,8 +73,12 @@ final class UIButtonApplyStyleTests: XCTestCase {
 
         // Then
         XCTAssertNotNil(sut.backgroundColor)
-        // Background colors for different states should be set
-        XCTAssertNotNil(sut.backgroundImage(for: .normal))
+        // XDNS-0013: the assertion on backgroundImage(for:) was removed. DNSThemeButtonStyle does
+        // not model background images at all (zero occurrences of `backgroundImage` in
+        // DNSThemeTypes/Styles/DNSThemeButtonStyle.swift) and UIButton+dnsApplyStyle never calls
+        // setBackgroundImage(_:for:) — it styles backgrounds via `backgroundColor` per state.
+        // The assertion could therefore never pass; it tested an API the framework deliberately
+        // does not use.
     }
 
     func test_dnsApply_withButtonStyleBorder_shouldSetBorderProperties() {
@@ -159,32 +163,34 @@ final class UIButtonApplyStyleTests: XCTestCase {
 
     // MARK: - State-Specific Tests
 
+    // XDNS-0013: each of these four previously also asserted
+    // `XCTAssertNotNil(sut.backgroundImage(for: <state>))`, which could never pass —
+    // DNSThemeButtonStyle has no background-image concept and UIButton+dnsApplyStyle never calls
+    // setBackgroundImage(_:for:); it styles backgrounds via `backgroundColor`. The per-state
+    // titleColor assertions below are the real contract (UIButton+dnsApplyStyle.swift:27-31) and
+    // are retained unchanged.
     func test_dnsApply_shouldSetNormalStateProperties() {
         sut.dnsApply(mockButtonStyle)
 
         XCTAssertNotNil(sut.titleColor(for: .normal))
-        XCTAssertNotNil(sut.backgroundImage(for: .normal))
     }
 
     func test_dnsApply_shouldSetHighlightedStateProperties() {
         sut.dnsApply(mockButtonStyle)
 
         XCTAssertNotNil(sut.titleColor(for: .highlighted))
-        XCTAssertNotNil(sut.backgroundImage(for: .highlighted))
     }
 
     func test_dnsApply_shouldSetDisabledStateProperties() {
         sut.dnsApply(mockButtonStyle)
 
         XCTAssertNotNil(sut.titleColor(for: .disabled))
-        XCTAssertNotNil(sut.backgroundImage(for: .disabled))
     }
 
     func test_dnsApply_shouldSetSelectedStateProperties() {
         sut.dnsApply(mockButtonStyle)
 
         XCTAssertNotNil(sut.titleColor(for: .selected))
-        XCTAssertNotNil(sut.backgroundImage(for: .selected))
     }
 
     // MARK: - Edge Cases
