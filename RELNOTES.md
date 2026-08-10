@@ -4,26 +4,27 @@ All notable changes to DNSThemeObjects are documented here. Versions follow [Sem
 
 ---
 
-## 1.12.5 — 2026-08-09
+## 1.12.5 — 2026-08-10
 
 **Release Type**
--   BUGFIX
+-   MAINTENANCE
 
 **Issues Resolved**
--   XDNS-0018 — Single-line DNSForm text fields would not accept focus on consumer admin forms: the field acquired first responder and lost it again within the same tap, which presents to a user as "the keyboard never appears". Affected every single-line field on stages that call `reconfigureItems`; multi-line and picker fields were unaffected. Root cause was an inconsistency *between* the two guards shipped in 1.12.3 (XDNS-0014) and 1.12.4 (XDNS-0015), each of which is correct in isolation — which is why the behaviour was identical on 1.12.1 (neither guard) and 1.12.4 (both guards).
+-   NONE. **This release does not fix XDNS-0018, which remains open.** An earlier draft of these notes claimed it did; that claim was falsified before release and is corrected here rather than shipped. See "Known Problems".
 
 **New Features**
 -   NONE
 
 **Technical Improvements**
--   Removed `visibleOnImage` / `visibleOffImage` from the comparison in `AnimatedFieldFormat.dnsHasSameStateValues(as:)`, mirroring the exclusion `DNSThemeFieldStyle.isDiffFrom` already makes for the same two fields. The chain: a cell reconfigure produces a fresh `DNSThemeFieldStyle(from:)` copy, whose copy initializer calls `.copy()` on both images; `isDiffFrom` excludes those fields and reports "same", so the XDNS-0014 guard skips the format refresh and `style` silently desyncs from `format`; on focus the state mirror drives `updateForState(using:)`, and `dnsHasSameStateValues` — which *included* the image fields — reported "different" purely from copy-induced instance churn, so the XDNS-0015 guard did not fire, `format` was reassigned, and AnimatedField's `format.didSet -> setupTitle()` rebuilt the field and resigned first responder.
--   The exclusion is correct by construction, not a workaround. These are plain `UIImage`, not state-valued wrappers like `DNSUIColor`/`DNSUIEnabled`, so they have no per-state variant and cannot represent a state change; `updateForState(using:)` assigns them unconditionally, outside the `isEnabled`/`isSelected`/`isHighlighted`/`isFocused` branches every genuinely state-varying field lives in. Separately, `UIImage`'s `NSCopying` conformance never promises identity preservation, so comparing these fields by instance equality was unsound regardless of what `.copy()` returns on any given OS version.
--   Corrects a claim in the 1.12.4 notes below. That entry stated the comparison covered "exactly the fields `updateForState` mutates" and was therefore "complete equality [that] can never skip a genuine state change". The first half was accurate; the conclusion was not, because two of those fields are state-invariant and instance-unstable, so including them caused false "different" results. The comparison is now a pure state comparison.
+-   Removed `visibleOnImage` / `visibleOffImage` from the comparison in `AnimatedFieldFormat.dnsHasSameStateValues(as:)`, aligning it with the exclusion `DNSThemeFieldStyle.isDiffFrom` already makes for the same two fields. This is a **consistency cleanup with no observable runtime effect** — see below. The two comparators disagreeing on which fields participate was a real latent inconsistency worth removing on its own terms, but it was not causing a defect.
+-   Justification for the exclusion: these are plain `UIImage`, not state-valued wrappers like `DNSUIColor`/`DNSUIEnabled`, so they have no per-state variant and cannot represent a state change. `updateForState(using:)` assigns them unconditionally, outside the `isEnabled`/`isSelected`/`isHighlighted`/`isFocused` branches every genuinely state-varying field lives in.
+-   Corrects a claim in the 1.12.4 notes below. That entry stated the comparison covered "exactly the fields `updateForState` mutates" and was therefore "complete equality [that] can never skip a genuine state change". The premise was accurate; the conclusion overreached, because two of those fields are state-invariant. The comparison is now a pure state comparison.
 
 **Known Problems**
--   This release is verified by static analysis and a clean compile, **not** by runtime observation. No device trace of the defect was captured before release, and the accompanying regression suite (`Tests/DNSThemeObjectsTests/XDNS0018GuardSeamTests.swift`) has never been compiled or executed, because `DNSThemeObjectsTests` does not build under the Xcode 27 / iOS 27 SDK toolchain (XDNS-0013) — the same gap documented in 1.12.4. The suite is labelled as never-run in its own header and becomes runnable when XDNS-0013 lands.
--   The change is a no-op in the event the underlying `.copy()` on `UIImage` returns the same instance on a given OS version: the removed comparison would have evaluated equal anyway. It cannot regress behaviour in that case.
--   The `.copy() as! UIImage` calls in `DNSThemeFieldStyle.init(from:)` (DNSThemeTypes) remain the deeper instability and are unaddressed here — any future identity-sensitive comparison on those fields will hit this same class of bug. Worth a follow-up ticket.
+-   **XDNS-0018 remains OPEN and unfixed.** Single-line DNSForm text fields still lose first responder within the same tap on consumer admin forms. A proposed root cause — that `DNSThemeFieldStyle.init(from:)`'s `.copy()` on the two image fields churned instance identity and so defeated the XDNS-0015 guard — was **falsified by runtime measurement before this release shipped**. A probe compiled against the iOS Simulator SDK and run via `simctl spawn` on iOS 18.0, 26.0 and 27.0 shows `UIImage.copy()` returns the receiver on all three (`systemImage.copy() === self : true`), and `UIImage(systemName:)` returns a cached shared instance. No `withRenderingMode` call — the one identity-allocating path measured — exists anywhere in the framework. The removed comparison therefore always evaluated `true`, and the guard was behaving correctly. The change in this release is consequently a **no-op**, retained only as the consistency cleanup described above.
+-   No regression test accompanies this release. A suite was written against the falsified mechanism and **removed before release** rather than shipped: its own precondition (`XCTAssertFalse(styleA.visibleOnImage === styleB.visibleOnImage)`) is provably false given the cached-instance behaviour above, so it would have failed at setup the moment `DNSThemeObjectsTests` becomes buildable. `DNSThemeObjectsTests` still does not compile under the Xcode 27 / iOS 27 SDK toolchain (XDNS-0013), the same gap documented in 1.12.4.
+-   Both comparators now exclude the two image fields, so a data-driven theme that changes the eye symbol (reachable via the Firestore-backed path in `DNSThemeFieldStyle`) has no route to the rendered eye button. Pre-existing for `isDiffFrom`; now symmetrical. Tracked as a follow-up.
+-   The `.copy() as! UIImage` calls in `DNSThemeFieldStyle.init(from:)` (DNSThemeTypes) are unnecessary given `copy()` returns the receiver, and remain unaddressed here.
 
 ---
 
