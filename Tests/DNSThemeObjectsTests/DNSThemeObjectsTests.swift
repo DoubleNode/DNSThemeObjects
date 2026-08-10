@@ -23,7 +23,7 @@ final class DNSThemeObjectsTests: XCTestCase {
         let button = DNSUIButton()
         let label = DNSUILabel()
         let view = DNSUIView()
-        let imageView = DNSUIImageView()
+        let imageView = DNSUIImageView(frame: CGRect.zero)
 
         XCTAssertNotNil(button, "DNSUIButton should be instantiable")
         XCTAssertNotNil(label, "DNSUILabel should be instantiable")

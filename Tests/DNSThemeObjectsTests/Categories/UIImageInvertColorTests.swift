@@ -310,7 +310,7 @@ final class UIImageInvertColorTests: XCTestCase {
     // MARK: - Concurrent Access Tests
 
     func test_dnsInvertColor_concurrentAccess_shouldBeSafe() {
-        let testImage = createTestImageWithCIImage(color: .teal)
+        let testImage = createTestImageWithCIImage(color: .systemTeal)
         let expectation = self.expectation(description: "Concurrent invert operations")
         expectation.expectedFulfillmentCount = 5
 

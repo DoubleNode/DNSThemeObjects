@@ -13,6 +13,11 @@ import Foundation
 import SkeletonView
 @testable import DNSThemeObjects
 
+// XDNS-0013: `AnimatedField` is declared `@MainActor open class` by AnimatedField 3.2.2, and
+// UIKit's `UIView` is `@MainActor` besides. Under Swift 6 strict concurrency every `sut` access
+// from a nonisolated XCTestCase method is an isolation violation. Annotating the suite is the
+// correct fix — these tests drive UIKit and genuinely belong on the main actor.
+@MainActor
 final class AnimatedFieldApplyStyleTests: XCTestCase {
     private var sut: AnimatedField!
     private var mockFieldStyle: DNSThemeFieldStyle!

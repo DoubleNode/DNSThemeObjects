@@ -301,7 +301,7 @@ final class UIImageWithColorTests: XCTestCase {
     }
 
     func test_initWithColor_withVeryLargeFractionalDimensions_shouldCreateImage() {
-        let image = UIImage(with: .teal, width: 1234.56, height: 567.89)
+        let image = UIImage(with: .systemTeal, width: 1234.56, height: 567.89)
 
         XCTAssertNotNil(image)
         XCTAssertNotNil(image?.cgImage)

@@ -11,6 +11,11 @@ import DNSThemeTypes
 import AnimatedField
 @testable import DNSThemeObjects
 
+// XDNS-0013: `DNSUIAnimatedField` subclasses AnimatedField 3.2.2's `@MainActor open class`,
+// so under Swift 6 strict concurrency every `sut` access from a nonisolated XCTestCase method
+// is an isolation violation. Annotating the suite is the correct fix — these tests drive UIKit
+// and genuinely belong on the main actor.
+@MainActor
 final class DNSUIAnimatedFieldTests: XCTestCase {
     private var sut: DNSUIAnimatedField!
     private var mockStyle: DNSThemeFieldStyle!
@@ -538,18 +543,16 @@ final class DNSUIAnimatedFieldTests: XCTestCase {
         XCTAssertNoThrow(_ = sut?.isValid)
     }
 
+    // XDNS-0013: these two were previously wrapped in a detached `Task { @MainActor in ... }`
+    // that was never awaited, so the test method returned before the body ran — they exercised
+    // nothing and could not fail. The suite is now @MainActor, so the call runs synchronously
+    // on the main actor and a crash actually fails the test.
     func test_showAlert_shouldWork() {
-        Task { @MainActor in
-            sut?.showAlert("Test error message")
-            // This should not crash in async context
-        }
+        XCTAssertNoThrow(sut?.showAlert("Test error message"))
     }
 
     func test_hideAlert_shouldWork() {
-        Task { @MainActor in
-            sut?.hideAlert()
-            // This should not crash in async context
-        }
+        XCTAssertNoThrow(sut?.hideAlert())
     }
 
     // MARK: - AnimatedField Event Tests
